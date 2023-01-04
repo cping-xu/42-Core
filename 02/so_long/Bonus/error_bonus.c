@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 17:12:07 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/02 19:10:21 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/04 17:40:09 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int	rowwall(t_data *a)
 	return (0);
 }
 
-int	ft_error(t_data *a)
+int	ft_error(t_data *a, char **av)
 {
 	if (mapsize(a) == 1)
 		return (1);
@@ -117,6 +117,8 @@ int	ft_error(t_data *a)
 	if (colwall(a) == 1)
 		return (1);
 	if (valid(a) == 1)
+		return (1);
+	if (checkav(av) == 1)
 		return (1);
 	return (0);
 }

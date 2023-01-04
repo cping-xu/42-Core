@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 14:10:52 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/04 13:09:11 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/04 17:39:51 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,8 @@ int		moveup(t_data *a);
 int		movedown(t_data *a);
 int		moveleft(t_data *a);
 int		moveright(t_data *a);
-int		ft_error(t_data *a);
+int		ft_error(t_data *a, char **av);
 int		valid(t_data *a);
+int		checkav(char **av);
 
 #endif

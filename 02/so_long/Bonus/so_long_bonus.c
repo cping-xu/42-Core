@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/26 13:29:17 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/04 13:14:24 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/04 17:42:29 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,25 +95,30 @@ int	destroyexit(t_data *a)
 	exit(0);
 }
 
-int	main(void)
+int	main(int ac, char **av)
 {
 	t_data	a;
 
-	a.map = getmap("maps/map.txt");
-	if (ft_error(&a) == 1)
+	if (ac == 2)
 	{
-		ft_putstr_fd("Error\n", 2);
-		return (0);
+		a.map = getmap(av[1]);
+		if (ft_error(&a, av) == 1)
+		{
+			ft_putstr_fd("Error\n", 2);
+			return (0);
+		}
+		a.step = 0;
+		a.c.fps = 0;
+		a.mlx = mlx_init();
+		a.win = mlx_new_window(a.mlx, 1920, 1080, "so_long");
+		image(&a);
+		putimage(a.map, &a);
+		mlx_hook(a.win, 2, (1L << 0), myclose, &a);
+		mlx_hook(a.win, 17, (1L << 0), destroyexit, &a);
+		mlx_loop_hook(a.mlx, display, &a);
+		mlx_loop(a.mlx);
 	}
-	a.step = 0;
-	a.c.fps = 0;
-	a.mlx = mlx_init();
-	a.win = mlx_new_window(a.mlx, 1920, 1080, "so_long");
-	image(&a);
-	putimage(a.map, &a);
-	mlx_hook(a.win, 2, (1L << 0), myclose, &a);
-	mlx_hook(a.win, 17, (1L << 0), destroyexit, &a);
-	mlx_loop_hook(a.mlx, display, &a);
-	mlx_loop(a.mlx);
+	else
+		ft_putstr_fd("Error\n", 2);
 	return (0);
 }

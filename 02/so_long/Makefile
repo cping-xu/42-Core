@@ -16,6 +16,7 @@ BONUS		=	Bonus/dfs_bonus.c \
 				Bonus/getmap_bonus.c \
 				Bonus/move_bonus.c \
 				Bonus/putimage_bonus.c \
+				Bonus/checkav_bonus.c	\
 				Bonus/so_long_bonus.c	\
 				get_next_line/get_next_line.c \
 				get_next_line/get_next_line_utils.c
