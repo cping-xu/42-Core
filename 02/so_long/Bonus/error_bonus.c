@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 17:12:07 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/04 17:40:09 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/04 18:55:26 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ int	ft_error(t_data *a, char **av)
 	if (colwall(a) == 1)
 		return (1);
 	if (valid(a) == 1)
+		return (1);
+	if (checkp(a) == 1)
 		return (1);
 	if (checkav(av) == 1)
 		return (1);

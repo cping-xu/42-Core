@@ -7,6 +7,7 @@ MANDATORY	=	Mandatory/dfs.c \
 				Mandatory/getmap.c \
 				Mandatory/move.c \
 				Mandatory/putimage.c \
+				Mandatory/checkav.c \
 				Mandatory/so_long.c	\
 				get_next_line/get_next_line.c \
 				get_next_line/get_next_line_utils.c

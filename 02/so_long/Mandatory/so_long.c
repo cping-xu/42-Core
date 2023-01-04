@@ -6,30 +6,11 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/26 13:29:17 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/04 17:40:24 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/04 18:52:13 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/so_long.h"
-
-int	checkav(char **av)
-{
-	int	i;
-
-	i = 0;
-	while (av[1][i])
-		i++;
-	i = i - 1;
-	if (av[1][i--] == 'r')
-	{
-		if (av[1][i--] == 'e')
-		{
-			if (av[1][i] == 'b')
-				return (0);
-		}
-	}
-	return (1);
-}
 
 int	collect(t_data *a)
 {
