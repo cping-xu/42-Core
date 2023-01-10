@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/02 17:56:46 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/02 19:10:48 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/10 15:53:13 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	valid(t_data *a)
 			restore(a);
 		}
 	}
-	if (c != collect(a) || e <= 0)
+	if (c != collect(a) || e != 1)
 		return (1);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/26 13:29:17 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/04 17:42:29 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/10 15:33:17 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,6 @@ int	main(int ac, char **av)
 		mlx_loop(a.mlx);
 	}
 	else
-		ft_putstr_fd("Error\n", 2);
+		ft_putstr_fd("Input Error\n", 2);
 	return (0);
 }
