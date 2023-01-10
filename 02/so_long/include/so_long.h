@@ -6,7 +6,7 @@
 /*   By: cping-xu <cping-xu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 14:10:52 by cping-xu          #+#    #+#             */
-/*   Updated: 2023/01/04 18:54:57 by cping-xu         ###   ########.fr       */
+/*   Updated: 2023/01/10 16:11:20 by cping-xu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ typedef struct s_data
 	t_check		e;
 }	t_data;
 
-char	**getmap(char *maps);
+char	**getmap(char *map);
 void	putimage(char **map, t_data *a);
 void	image(t_data *a);
 int		collect(t_data *a);
