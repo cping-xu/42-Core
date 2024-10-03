@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/14 23:24:59 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/07 12:27:25 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/05/02 12:37:41 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 # define __HTTP_REQUEST_HPP__
 
 # include <cstdio>
-# include <signal.h>
 # include "Webserv.hpp"
 # include "ServerBlock.hpp"
 # include "GetResponse.hpp"
 # include "PutResponse.hpp"
 # include "PostResponse.hpp"
 # include "DeleteResponse.hpp"
+# include "TraceResponse.hpp"
 # include "RequestErrorHandling.hpp"
 
 // class	GetResponse;

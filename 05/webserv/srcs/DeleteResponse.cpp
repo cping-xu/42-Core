@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   DeleteResponse.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
+/*   By: mmuhamad <suchua@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 13:31:31 by lzi-xian          #+#    #+#             */
-/*   Updated: 2024/05/06 12:57:08 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2023/10/12 16:46:51 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "DeleteResponse.hpp"
 

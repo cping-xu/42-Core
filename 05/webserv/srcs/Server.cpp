@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 21:28:08 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/08 16:46:33 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/04/30 19:27:43 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,7 +204,7 @@ std::string	Server::AcceptRequest(struct sockaddr_in&	clientAddr, int clientSock
 	const int			port = sb.getPort();
 
 	std::cout << GREEN << "[ ✅ ] New connection" << YELLOW << " : client with IP "  << BLUE << inet_ntoa(clientAddr.sin_addr) << YELLOW ;
-	std::cout << ", accepted on port " << BLUE << port << " ==> "<< MAGENTA << "FD -> " << clientSocket << RESET << std::endl << std::endl;
+	std::cout << ", accepted on port " << BLUE << port << " ==> "<< MAGENTA << "FD -> " << clientSocket << RESET << std::endl;
 
 	receiveData(clientSocket, receivedData);
 

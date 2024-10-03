@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/15 00:20:17 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/12 13:23:26 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/04/30 19:54:46 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ GetResponse::GetResponse(const HttpRequest req, const Location target, RequestEr
 // check whether the GET request is an image file
 bool	GetResponse::isImgFile(std::string &file)
 {
-	const std::string	type[8] = {".avif", ".gif", ".jpeg", ".png", ".svg", ".csv", ".jpg", ".ico"};
+	const std::string	type[9] = {".avif", ".gif", ".jpeg", ".png", ".svg", ".csv", ".txt", ".jpg", ".ico"};
 	std::string			check;
 
 	size_t dotPos = file.find_last_of(".");
@@ -38,7 +38,7 @@ bool	GetResponse::isImgFile(std::string &file)
         check = file.substr(dotPos);
     }
 
-	for (size_t i = 0; i < 8; i++)
+	for (size_t i = 0; i < 9; i++)
 	{
 		if (type[i] == check)
 			return (true);
@@ -98,6 +98,7 @@ std::string GetResponse::sendFile(std::string &path, Location target, RequestErr
         svgFilePath += file;
     }
 
+
 	if (type != ".csv" && type != ".txt")
 	{
 		// Open the img file
@@ -155,7 +156,7 @@ std::string GetResponse::sendFile(std::string &path, Location target, RequestErr
 // execute in Location
 std::string	GetResponse::locationRequest(std::string &path, Location target ,RequestErrorHandling err)
 {
-	std::string						httpResponse, str, dir;
+	std::string						index = "index.html", httpResponse, str, dir;
 	std::ifstream					input_file;
 	char							c;
 	
@@ -168,18 +169,8 @@ std::string	GetResponse::locationRequest(std::string &path, Location target ,Req
     {
         dir = path;
     }
-    int slashend = 0;
-    if(dir[dir.length() - 1] == '/')
-        slashend = 1;
-    if(dir[dir.length() - 1] != '/')
-        dir += '/';
-    DIR* in = opendir(dir.c_str());
-    if (!in)
-    {
-        goto label;
-    }
-    closedir(in);
-    if (target.getAutoIndex() && target.getIndex().empty())
+
+    if (target.getAutoIndex() && path[path.length() - 1] == '/')
     {
         std::string parentDirPath;
 
@@ -201,76 +192,42 @@ std::string	GetResponse::locationRequest(std::string &path, Location target ,Req
         else
             directoryPath2 = directoryPath2.substr(pos2);
 
-        // size_t pos = directoryPath2.rfind('/');
-        // if (pos != std::string::npos) {
-            // parentDirPath = directoryPath2.substr(0, pos);
-        // }
-        // else
-        // {
-        //     parentDirPath = "";
-        // }
-        // parentDirPath = target.getRoot();
-        parentDirPath = dir;
+        size_t pos = directoryPath2.rfind('/');
+        if (pos != std::string::npos) {
+            parentDirPath = directoryPath2.substr(0, pos);
+        }
+        else
+        {
+            parentDirPath = "";
+        }
+
         DIR* dir = opendir(directoryPath2.c_str());
         if (!dir) {
             std::cerr << "Failed to open directory." << std::endl;
             err.generateErrResponse(404, target);
             return(err.getErrResponse());
         }
-        // if (directoryPath2) autoindex/
+
         std::string dirList;
         struct dirent* entry;
         while ((entry = readdir(dir)) != NULL) {   
             if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                std::string fullPath = std::string(directoryPath2) + std::string(entry->d_name);
+                std::string fullPath = std::string(directoryPath2) + "/" + std::string(entry->d_name);
                 int count = 0;
                 for (size_t i = 0; i < fullPath.length(); ++i) {
-                    if (fullPath[i] == '/') {
+                    if (str[i] == '/') {
                         ++count;
                     }
                 }
-                DIR* dir1 = opendir(fullPath.c_str());
-                if (dir1)
-                {
-                    if (count > 1 && strncmp(fullPath.c_str(), target.getRoot().c_str(), target.getRoot().size()))
-                    {    
-                        while (count > 1)
-                        {
-                            pos2 = fullPath.find('/');
-                            fullPath = fullPath.substr(pos2 + 1);
-                            count--;
-                        }
-                    }
-                    else
-                    {
-                        pos2 = fullPath.find('/');
-                        fullPath = fullPath.substr(pos2 + 1);
-                    }
-                    closedir(dir1);
-                }
-                else
-                {
-                    if (strncmp(fullPath.c_str(), target.getRoot().c_str(), target.getRoot().size()) && count < 2)
-                    {
-                        fullPath = fullPath.substr(target.getRoot().size() - 1 );
-                    }
-                    while (count > 1)
-                    {
-                        
-                        pos2 = fullPath.find('/');
-                        fullPath = fullPath.substr(pos2 + 1);
-                        count--;
-                    }
-                }
-                if (slashend == 1 && count == 1)
+                if (count != 1)
                 {
                     pos2 = fullPath.find('/');
                     fullPath = fullPath.substr(pos2 + 1);
-                    count--;
                 }
                 dirList += "<tr><td valign=\"top\"></td><td><a href=\"" + fullPath + "\">" + std::string(entry->d_name) + "</a></td></tr>\n";
             }
         }
+
         closedir(dir);
         
         std::string htmlContent = "<!DOCTYPE html><html><head><title>Directory Listing</title></head><body><h1>Directory Listing</h1><table><tr><th valign=\"top\"></th><th style=\"text-align: left;\"><a href=\"Name\">Name</a></th></tr><tr><th colspan=\"2\"><hr></th></tr><tr><td valign=\"top\"></td><td><a href=\"$PARENT_DIR\">Parent Directory</a></td></tr>$DIR_LIST<tr><th colspan=\"2\"><hr></th></tr></table></body></html>";
@@ -281,36 +238,7 @@ std::string	GetResponse::locationRequest(std::string &path, Location target ,Req
         }
 
         pos1 = htmlContent.find("$PARENT_DIR");
-        if (pos1 != std::string::npos)
-		{
-            if (parentDirPath[parentDirPath.length() - 1] == '/')
-			{
-                parentDirPath = parentDirPath.substr(0, parentDirPath.size() - 1);
-			}
-            size_t pos = parentDirPath.rfind('/');
-            if (pos != std::string::npos) 
-            {
-                parentDirPath = parentDirPath.substr(0, pos);
-			}
-			int count = 0;
-			for (size_t i = 0; i < parentDirPath.length(); ++i) {
-				if (parentDirPath[i] == '/') {
-					++count;
-				}
-			}
-			if (count > 0)
-			{
-				size_t cpos = parentDirPath.find('/');
-				parentDirPath = parentDirPath.substr(cpos);
-			}
-            std::string chck2 = target.getRoot().substr(2);
-            int par = chck2.find('/');
-            std::string chck = parentDirPath.substr(0, par);
-            if (parentDirPath == chck)
-            {
-                parentDirPath = "/";
-            }
-            
+        if (pos1 != std::string::npos) {
             htmlContent.replace(pos1, strlen("$PARENT_DIR"), parentDirPath);
         }
 
@@ -322,8 +250,9 @@ std::string	GetResponse::locationRequest(std::string &path, Location target ,Req
         return (httpResponse);
     }
 
-    if (!target.getIndex().empty())
+    if (path[path.length() - 1] == '/' && !target.getIndex().empty())
     {
+
         std::string ind = target.getRoot() + "/" + target.getIndex();
         
         input_file.open(ind.c_str());
@@ -338,6 +267,7 @@ std::string	GetResponse::locationRequest(std::string &path, Location target ,Req
                 break;
         }
         input_file.close();
+        
         std::stringstream	len;
         len << str.length();
 
@@ -348,13 +278,9 @@ std::string	GetResponse::locationRequest(std::string &path, Location target ,Req
         httpResponse += str;
         return (httpResponse);
     }
-
-    err.generateErrResponse(403, target);
-    return(err.getErrResponse());
     
-    label:
-    std::string ind = target.getRoot() + "/" + path.c_str();
-	input_file.open(ind.c_str());
+	
+	input_file.open(dir.c_str());
 	if (!input_file)
 	{
         err.generateErrResponse(404, target);

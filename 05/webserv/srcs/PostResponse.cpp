@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/17 13:31:31 by lzi-xian          #+#    #+#             */
-/*   Updated: 2024/05/06 12:40:35 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/05/02 14:47:16 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,33 @@
 
 int RequestHeaderChecking(const HttpRequest& req, std::string &boundary, const Location& sb)
 {
+	(void)boundary;
     std::map<std::string, std::string> header = req.getHeader();
 	std::map<std::string, std::string>::iterator it = header.find("Content-Type");
 	if (it == header.end())
 		return (400);
-	size_t found = it->second.find("multipart/form-data");
+	// size_t found = it->second.find("multipart/form-data");
+	// // if (found == std::string::npos)
+	// // 	return (415);
+	// found = it->second.find("boundary=");
+	// if (found + 9 >= std::string::npos)
+	// 	return (400);
+	// boundary = "--" + it->second.substr(found + 9);
+	// it = header.find("Content-Length");
 	// if (found == std::string::npos)
-	// 	return (415);
-	found = it->second.find("boundary=");
-	if (found + 9 >= std::string::npos)
-		return (400);
-	boundary = "--" + it->second.substr(found + 9);
-	it = header.find("Content-Length");
-	if (found == std::string::npos)
-		return (400);
-    std::string s = header["Content-Length"];
-    if (std::stol(s) > sb.getClientMaxBodySize())
-        std::cout << "Exceeded max" << std::endl;
-    if (std::stol(s) < sb.getClientMinBodySize())
-        std::cout << "Exceeded min" << std::endl;
+	// 	return (400);
+	try
+    {
+        std::string s = header["Content-Length"];
+        if (std::stol(s) > sb.getClientMaxBodySize())
+            std::cout << "Exceeded max" << std::endl;
+        if (std::stol(s) < sb.getClientMinBodySize())
+            std::cout << "Exceeded min" << std::endl;
+    }
+    catch(const std::exception& e)
+    {
+        return (0);
+    }
     return (0);
 }
 
@@ -108,6 +116,7 @@ int FileCheckingWriting(std::map<std::string, std::string> body_extract, std::st
         if (method == PUT)
             return (400); 
     }
+	std::cout << path.c_str() << std::endl;
     outfile.open(path.c_str());
     if (!outfile.is_open())
 	{

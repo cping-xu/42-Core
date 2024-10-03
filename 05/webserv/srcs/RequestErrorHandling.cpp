@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/27 15:55:41 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/08 13:50:15 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/03/27 14:58:24 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,31 @@ bool	RequestErrorHandling::urlPathFound()
 	loc = this->_sb.getLocation();
 	for (it = loc.begin(); it != loc.end(); it++)
 	{
+        // if (it->getDirectory().find(".") != std::string::npos)
+        // {
+            // size_t start_pos = urlDir.find(".bla");
+            // if (start_pos != std::string::npos) {
+            //     start_pos += 4;
+            //     urlDir.substr(0, start_pos);
+            // }else{
+            //     std::string path_info = this->_req.get_pathinfo(this->_req);
+            //     urlDir = urlDir.substr(0, urlDir.find(path_info));
+            // }
+            // if (!it->getRoot().empty())
+            // {
+            //     infile.open(it->getRoot().c_str());
+            //     if (infile.is_open())
+	        //     {
+            //         std::string full_url = it->getRoot() +  it->getCgiScript().front();
+            //     }
+            // }
+            // else
+            // {
+            //     //use server block root
+            //     std::string full_url = ;
+            // }
+            // return (true);
+        // }
 		if (it->getDirectory() == urlDirFront)
 		{
 			this->_currLoc = *it;
@@ -226,10 +251,14 @@ void	RequestErrorHandling::generateErrResponse(int statusCode, Location target)
 	{
 		if (statusCode != 200)
 		{
-			htmlBody << "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>ERROR PAGE</title><style>.c {text-align: center;margin-top: 100px;}h1 {font-size: 72px;}p {font-size: 24px;}</style></head><body><div class=\"c\"><h1>";
+			htmlFile.open("./error_page/Default_error_page1.txt");
+			while (std::getline(htmlFile, line))
+				htmlBody << line;
 			htmlBody << this->_req.getHttpStatusMsg().find(statusCode)->second;
-			htmlBody << "</h1><p>ERROR!!!</p></div></body>";
-			
+			htmlFile.close();
+			htmlFile.open("./error_page/Default_error_page2.txt");
+			while (std::getline(htmlFile, line))
+				htmlBody << line;
 		}
 		else
 			htmlBody << this->_req.getHttpStatusMsg().find(statusCode)->second;

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload</title>
+  <style>
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Upload a File</h2>
+    <form id="uploadForm">
+      <input type="file" id="fileInput" name="fileInput">
+      <input type="text" id="dirInput" name="dirInput" placeholder="Directory">
+      <button type="submit">Upload</button>
+    </form>
+    <div id="uploadStatus"></div>
+  </div>
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+      
+      var formData = new FormData(); // Create a new FormData object
+      var file = document.getElementById('fileInput').files[0]; // Get the file from input element
+      var dir = document.getElementById('dirInput').value; // Get the directory from input element
+
+      formData.append('file', file); // Append the file to FormData object
+      formData.append('dir', dir); // Append the directory to FormData object
+      
+      // You can use fetch API or XMLHttpRequest to send the file to the server
+      // Example using fetch API
+      fetch('/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display upload status
+        document.getElementById('uploadStatus').innerText = data.message;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 17:43:02 by lzi-xian          #+#    #+#             */
-/*   Updated: 2024/05/07 17:19:22 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/04/29 14:16:40 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ Location::Location(std::vector<std::string>::iterator &i, std::vector<std::strin
 	
 	this->clientMaxBodySize = DEFAULT_CLIENT_MAX_SIZE;
 	this->clientMinBodySize = DEFAULT_CLIENT_MIN_SIZE;
-    this->setAutoIndex(false);
 	setDirectory(*i);
 
 	if (*(++i) != "{")
@@ -143,19 +142,12 @@ void	Location::addCgiScript(std::vector<std::string>::iterator &i)
 
 	try
 	{
-        
 		cgiScript.push_back(file);
-        if (cgiScript.size() != 1)
-            throw "trying to add more than 1 cgi_script";
 	}
 	catch(std::exception &e)
 	{
-		throw InvalidFileException("Error : Invalid argument in cgi_script");
+		throw InvalidFileException("Error : Invalid argument in error page }");
 	}
-    catch ( ... )
-    {
-        throw InvalidFileException("Error : trying to add more than 1 cgi_script");
-    }
 }
 
 void	Location::setCgiScript(std::vector<std::string> cgiScript) {this->cgiScript = cgiScript;}

@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/14 23:00:18 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/06 15:49:56 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/04/29 12:29:35 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # include "ServerBlock.hpp"
 # include "HttpRequest.hpp"
 # include "RequestErrorHandling.hpp"
-#include <sys/stat.h>
 
 class	HttpRequest;
 class	RequestErrorHandling;

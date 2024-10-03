@@ -6,40 +6,59 @@
 /*   By: lzi-xian <lzi-xian@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/14 23:33:01 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/11 14:43:56 by lzi-xian         ###   ########.fr       */
+/*   Updated: 2024/05/11 15:33:56 by lzi-xian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 #define BUFFER_SIZE 100000
 
-std::string processChunk(const std::string& chunkedRequest) {
-    std::istringstream iss(chunkedRequest);
-    std::ostringstream oss;
+const std::string processChunk(const std::string& req)
+{
+    size_t headerEnd = req.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        // Malformed request, return as is
+        return req;
+    }
     
-    while (!iss.eof()) {
-        std::string line;
-        std::getline(iss, line);
+    std::string head = req.substr(0, headerEnd + 4); // Include the CRLFCRLF
+    std::string chunks = req.substr(headerEnd + 4);
+    std::string body;
+    size_t pos = 0;
+    
+    while (pos < chunks.length()) {
+        size_t endOfChunkSize = chunks.find("\r\n", pos);
+        if (endOfChunkSize == std::string::npos) {
+            // Malformed chunked data, return as is
+            return req;
+        }
         
-        size_t chunkSize;
-        std::istringstream(line) >> std::hex >> chunkSize;
+        std::string chunkSizeStr = chunks.substr(pos, endOfChunkSize - pos);
+        char *endPtr;
+        int chunkSize = strtol(chunkSizeStr.c_str(), &endPtr, 16);
+        
+        if (*endPtr != '\0' || chunkSize < 0) {
+            // Invalid chunk size, return as is
+            return req;
+        }
+        
+        pos = endOfChunkSize + 2;
+        
         if (chunkSize == 0) {
+            // End of chunks
             break;
         }
         
-        std::string chunkData(chunkSize, '\0');
-        iss.read(&chunkData[0], chunkSize);
-        
-        char crlf[2];
-        iss.read(crlf, 2);
-        if (crlf[0] != '\r' || crlf[1] != '\n') {
-            throw std::runtime_error("Invalid chunk format");
+        if (pos + chunkSize > chunks.length()) {
+            // Malformed chunked data, return as is
+            return req;
         }
         
-        oss << chunkData;
+        body += chunks.substr(pos, chunkSize);
+        pos += chunkSize + 2;
     }
     
-    return oss.str();
+    return head + body;
 }
 
 void	HttpRequest::parseHttpRequest(const str& req)
@@ -134,7 +153,7 @@ std::string	HttpRequest::get_pathinfo(const HttpRequest req)
 
     size_t start_pos = url.find(".bla");
     if (start_pos != std::string::npos) {
-		path_info = "./YoupiBanane/cgi_bin/cgi_tester";
+		path_info = "YoupiBanane/cgi_bin/cgi_tester";
         return path_info;
     }
     start_pos = url.find(".py");
@@ -161,34 +180,29 @@ void HttpRequest::populateEnvp(std::string input)
 	++this->_CurrEnvp;
 }
 
-std::string get_exe(Location target2, std::string url)
+std::string get_exe(Location target2, std::string req)
 {
-	std::string exe;
+	size_t start_pos = req.find(".bla");
+    if (start_pos != std::string::npos) {
+        return "YoupiBanane/cgi_bin/cgi_tester";
+    }
+	std::string folder;
+    if (target2.getRoot().empty())
+    {
+        folder = target2.getCgiScript().front();
+    }
+    else{
+        folder = target2.getRoot() + "/" +target2.getCgiScript().front();
+    }
+    
+	std::string 	line;
+	std::string 	ret;
+	std::ifstream	in(folder.c_str());
+	std::getline(in, line);
+	size_t 			pos = line.find("!");
 
-    size_t start_pos = url.find(".bla");
-    if (start_pos != std::string::npos) {
-		exe = "./cgi_tester";
-        return exe;
-    }
-    start_pos = url.find(".py");
-    if (start_pos != std::string::npos) {
-		start_pos += 3;
-		exe = url.substr(0, start_pos);
-        return (target2.getRoot() + exe);
-    }
-    start_pos = url.find(".php");
-    if (start_pos != std::string::npos) {
-		start_pos += 4;
-		exe = url.substr(0, start_pos);
-        return (target2.getRoot() + exe);
-    }
-    return exe;
-}
-
-void handleAlarm(int signal) {
-    pid_t pid = signal;
-    std::cerr << "Child process timed out. Killing..." << std::endl;
-    kill(pid, SIGKILL);
+	ret = line.substr(pos + 1);
+	return(ret);
 }
 
 std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSocket, const ServerBlock sb, char **env)
@@ -213,7 +227,6 @@ std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSo
 
 	if (target2.getCgiScript().size() != 0)
 	{
-		target2.setRoot(target.getRoot());
 		std::string		toWrite = this->getfull();
         FILE*           inTempFile = std::tmpfile();
         FILE*           outTempFile = std::tmpfile();
@@ -222,8 +235,13 @@ std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSo
             err.generateErrResponse(500, target2);
 			return (err.getErrResponse());
         }
+        std::fwrite(toWrite.c_str(), sizeof(char), toWrite.size(), inTempFile);
 
-		std::string cgi_script = target2.getCgiScript().front();
+		std::string cgi_script;
+        if (target2.getRoot().empty())
+            cgi_script = target2.getCgiScript().front();
+        else
+            cgi_script = target2.getRoot() + "/" +target2.getCgiScript().front();
 
 		populateEnvp("HTTP_X_SECRET_HEADER_FOR_TEST=1");
 		populateEnvp("REDIRECT_STATUS=200");
@@ -240,7 +258,6 @@ std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSo
 		populateEnvp("SERVER_PROTOCOL=HTTP/1.1");
 		populateEnvp("SERVER_SOFTWARE=webserv");
 		populateEnvp("SERVER_PORT=" + std::to_string(sb.getPort()));
-		populateEnvp("REQUEST=" + toWrite);
 		
 		int	stdinFd = dup(STDIN_FILENO);
 		int	stdoutFd = dup(STDOUT_FILENO);
@@ -248,63 +265,35 @@ std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSo
 		std::string exe = get_exe(target2, this->getPath());
 		if (pid == 0)
 		{
-            signal(SIGALRM, handleAlarm);
-            alarm(3);
             dup2(fileno(inTempFile), STDIN_FILENO);
             dup2(fileno(outTempFile), STDOUT_FILENO);
 			close(fileno(inTempFile));
 			close(fileno(outTempFile));
-            char	*args[3] = {(char *)cgi_script.c_str(), (char *)exe.c_str(), NULL};
-            (void)env;
-            execve(args[0], args, _envp);
-            fclose(inTempFile);
-            fclose(outTempFile);
-            std::cerr << RED << "Execve failed..." << RESET << std::endl;
-            exit(EXIT_FAILURE);
-    
-		}
-        int status;
-        waitpid(pid, &status, 0);
-
-        alarm(0);
-        if (WEXITSTATUS(status) != 0) {
+			char	*args[3] = {(char *)exe.c_str(), (char *)cgi_script.c_str(), NULL};
+			(void)env;
+			execve(args[0], args, _envp);
 			fclose(inTempFile);
-			fclose(outTempFile);
-			dup2(stdinFd, STDIN_FILENO);
-			close(stdinFd);
-			dup2(stdoutFd, STDOUT_FILENO);
-			close(stdoutFd);
-            for (size_t i = 0; i < 15; ++i)
-			std::memset(this->_envp[i], 0, 1000);
-		    this->_CurrEnvp = 0;
-            err.generateErrResponse(500, target2);
-			return (err.getErrResponse());
-        }
-        else if (WIFSIGNALED(status)) {
-            std::cout << "PID killed due to taking long execution time!\nExpect 500 from the webserv." << std::endl;
-        }
+            fclose(outTempFile);
+			std::cerr << RED << "Execve failed..." << RESET << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		int status;
+		waitpid(-1, &status, 0);
+		if (WIFEXITED(status) == 0)
+			std::cerr << RED << "CGI exited abnormally" << RESET << std::endl;
 
         std::rewind(outTempFile);
         char buffer[BUFFER_SIZE];
         size_t bytesRead;
         std::string output;
-        while ((bytesRead = std::fread(buffer, sizeof(char), BUFFER_SIZE, outTempFile)) > 0) {
+        while ((bytesRead = fread(buffer, sizeof(char), BUFFER_SIZE, outTempFile)) > 0) {
             output.append(buffer, bytesRead);
         }
-		fclose(inTempFile);
-		fclose(outTempFile);
-		dup2(stdinFd, STDIN_FILENO);
-		close(stdinFd);
-		dup2(stdoutFd, STDOUT_FILENO);
-		close(stdoutFd);
         
 		size_t  startPos = output.find("\r\n\r\n");
 		if (startPos == std::string::npos)
 		{
-			for (size_t i = 0; i < 15; ++i)
-			std::memset(this->_envp[i], 0, 1000);
-			this->_CurrEnvp = 0;
-			err.generateErrResponse(500, target2);
+			err.generateErrResponse(404, target2);
 			return (err.getErrResponse());
 		}
 		else
@@ -315,6 +304,12 @@ std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSo
 			response += newOutput;
 			response += "\r\n\r\n";
 			std::cout << GREEN << "CGI ran successfully!" << RESET << "\n\n";
+			fclose(inTempFile);
+            fclose(outTempFile);
+			dup2(stdinFd, STDIN_FILENO);
+			close(stdinFd);
+			dup2(stdoutFd, STDOUT_FILENO);
+			close(stdoutFd);
 		}
 
 		for (size_t i = 0; i < 15; ++i)
@@ -343,9 +338,15 @@ std::string	HttpRequest::generateHttpResponse(const str& req, const int clientSo
 		case DELETE:
 			response = DeleteResponse(*this, clientSocket, target, err).getResponse();
 			break;
+		case HEAD:
+			err.generateErrResponse(200, target);
+			response = err.getErrResponse();
+			break;
+		case TRACE:
+			response = TraceResponse(*this, clientSocket, target, err).getResponse();
+			break;
 		default:
-            err.generateErrResponse(500, target);
-			return (err.getErrResponse());
+			break;
 	}
 	return (response);
 }
@@ -355,20 +356,19 @@ HttpRequest::HttpRequest()
 	this->_httpStatusMsg[200] = "200 OK\r\n";
 	this->_httpStatusMsg[201] = "201 Created\r\n";
 	this->_httpStatusMsg[400] = "400 Bad Request\r\n";
-	this->_httpStatusMsg[403] = "403 Forbidden\r\n";
 	this->_httpStatusMsg[404] = "404 Not Found\r\n";
 	this->_httpStatusMsg[405] = "405 Not Allowed\r\n";
 	this->_httpStatusMsg[413] = "413 Request Entity Too Large\r\n";
 	this->_httpStatusMsg[415] = "415 Unsupported Media Type\r\n";
 	this->_httpStatusMsg[500] = "500 Internal Server Error\r\n";
 	
-    this->_envp = new char*[17];
-	for (size_t i = 0; i < 16; ++i)
+    this->_envp = new char*[16];
+	for (size_t i = 0; i < 15; ++i)
 	{
 		this->_envp[i] = new char[1000];
 		std::memset(this->_envp[i], 0, 1000);
 	}
-	this->_envp[16] = NULL;
+	this->_envp[15] = NULL;
 	this->_CurrEnvp = 0;
 }
 
@@ -391,10 +391,12 @@ HttpRequest&	HttpRequest::operator=(const HttpRequest& other)
 void	HttpRequest::setMethod(str method)
 {
 	if (method == "GET")			_methodEnum = GET;
+	else if (method == "HEAD")		_methodEnum = HEAD;
 	else if (method == "DELETE")	_methodEnum = DELETE;
 	else if (method == "OPTIONS")	_methodEnum = OPTIONS;
 	else if (method == "POST")		_methodEnum = POST;
 	else if (method == "PUT")		_methodEnum = PUT;
+	else							_methodEnum = TRACE;
 }
 
 void	HttpRequest::setfull(str full) {this->_full = full;}

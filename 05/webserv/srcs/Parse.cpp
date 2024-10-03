@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 13:09:56 by mmuhamad          #+#    #+#             */
-/*   Updated: 2024/05/07 13:54:58 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/03/27 12:33:13 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,8 +220,8 @@ void	Parse::serverCheck(Parse::iterator &i)
 			_conf = CLIENT_MAX_BODY_SIZE;
 		else if (*i == "client_min_body_size")
 			_conf = CLIENT_MIN_BODY_SIZE;
-		// else if (*i == "cgi_script")
-		// 	_conf = CGI_SCRIPT;
+		else if (*i == "cgi_script")
+			_conf = CGI_SCRIPT;
 		else if (*i == "autoindex")
 			_conf = AUTOINDEX;
 		if (_conf == NONE)
@@ -256,8 +256,8 @@ void	Parse::serverCheck(Parse::iterator &i)
 			Location	loc(i, token);
 			block.addLocation(loc);
 		}
-		// else if (_conf == CGI_SCRIPT)
-		// 	block.setCgiScript(i);
+		else if (_conf == CGI_SCRIPT)
+			block.setCgiScript(i);
 		else if (_conf == AUTOINDEX)
 		{
 			if (isOnOff(*i))

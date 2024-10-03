@@ -6,7 +6,7 @@
 /*   By: mmuhamad <mmuhamad@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 00:51:12 by suchua            #+#    #+#             */
-/*   Updated: 2024/05/06 16:29:06 by mmuhamad         ###   ########.fr       */
+/*   Updated: 2024/04/29 14:14:42 by mmuhamad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ class Location
 		int									clientMinBodySize;
 		bool								autoIndex;
 		std::vector<std::string>			methods;
-        std::vector<Location>		        location;
 		bool								init;
 	public:
 		Location();
